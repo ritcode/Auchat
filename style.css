@@ -11,7 +11,7 @@ body {
   width: 100px;
   display: inline;
   margin: 5px;
-  color: yellowgreen;
+  background-color: yellowgreen;
 }
 
 .btn-call {
@@ -19,14 +19,15 @@ body {
   margin: 20px;
   width: 200px;
   height: 50px;
-  color: seagreen;
+  background-color: seagreen;
   
 }
 
 #hangbtn {
   margin: 30px;
-  width: 100px;
-  color: darkred;
+  width: 150px;
+  height: 25px;
+  background-color: darkred;
   
 }
 
