@@ -1,0 +1,26 @@
+body {
+  background-color: #b1dfeb;
+}
+.container {
+  margin: auto;
+  
+  
+}
+
+.btn-msg , .btn-connect {
+  width: 100px;
+  display: inline;
+  margin: 5px;
+}
+
+.btn-call {
+  display: block;
+  margin: 20px;
+  width: 200px;
+  height: 50px;
+}
+
+input {
+  width: 200px;
+  height: 50px;
+}
