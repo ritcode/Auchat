@@ -4,12 +4,14 @@ peer.on('open', function(id) {
   console.log('My peer ID is: ' + id);
   document.getElementById('id').textContent = "My id : " + id
 });
+
 let messages = document.getElementById('messages')
 
 let conn
 let messageValue
 let peerid
 let localstream
+
 async function getmedia () {
   await navigator.mediaDevices.getUserMedia({
     audio: true
@@ -19,50 +21,52 @@ async function getmedia () {
   })
   .catch((err) => console.log('error in getting localstream:', err))
 }
-
 setTimeout(getmedia, 0);
-let cbtn = () => {
-  conn = peer.connect(document.getElementById('peerid').value)
-  peerid = document.getElementById('peerid').value
-  document.getElementById('peerid').value = ''
-  console.log('connection sent')
-  start()
-}
-let mbtn = () => {
+
+document.getElementById('msgbtn').onclick = () => {
   messageValue = document.getElementById('msg').value
   let d = document.createElement('h4')
-  d.innerText = 'Me: '+ messageValue
+  d.innerText = 'Me: ' + messageValue
   messages.appendChild(d)
   document.getElementById('msg').value = ''
   conn.send(messageValue);
 }
-document.getElementById('msgbtn').onclick = mbtn
 
-document.getElementById('cbtn').onclick = cbtn
+document.getElementById('cbtn').onclick = () => {
+  conn = peer.connect(document.getElementById('peerid').value)
+  peerid = document.getElementById('peerid').value
+  document.getElementById('connect').hidden = true
+  document.getElementById('peerid').value = ''
+  console.log('connection sent')
+  afterConnecion();
+  start()
+}
 
-/*function showAfterCall() {
-  document.getElementById('localaudio').setAttribute('hidden', false)
-  document.getElementById('remoteaudio').setAttribute('hidden', false)
+function afterCall(c) {
+  document.getElementById('callMode').hidden = false
+  document.getElementById('remoteaudio').autoplay = true
   let hangup = document.getElementById('hangbtn')
-  hangup.setAttribute('hidden', false)
   hangup.onclick = () => {
-    conn.close()
-    document.getElementById('localaudio').setAttribute('hidden', true)
-    document.getElementById('remoteaudio').setAttribute('hidden', true)
-    hangup.setAttribute('hidden', true)
+    c.close()
+    console.log("connection closed!!")
+    document.getElementById('callMode').hidden = true
   }
-}*/
+}
 
-document.getElementById('hangbtn').onclick = () => {
-  conn.close()
-  console.log('connection closed')
+function afterConnecion() {
+  document.getElementById('connected').hidden = false
 }
 
 peer.on('connection', function(con) {
+  afterConnecion();
   conn = con
+  peerid = con.peer
+  document.getElementById('connect').hidden = true
   console.log('connection Received')
   start()
 });
+
+
 
 function start() {
   conn.on('open', function() {
@@ -77,26 +81,29 @@ function start() {
     document.getElementById('callbtn').onclick = () => {
       let call = peer.call(peerid, localstream)
       call.on('stream', function(stream) {
-        // `stream` is the MediaStream of the remote peer.
-        // Here you'd add it to an HTML video/canvas element.
+        
         document.getElementById('localaudio').srcObject = localstream
         document.getElementById('remoteaudio').srcObject = stream
-        //showAfterCall()
+        afterCall(call)
       });
+      call.on('close', () => {
+        console.log("connection closed!!")
+        document.getElementById('callMode').hidden = true
+      })
     }
 
     peer.on('call', function(call) {
-      // Answer the call, providing our mediaStream
-      //let ask = window.confirm('Do you want to accept call?')
-
       call.answer(localstream);
       call.on('stream', function(stream) {
-        // `stream` is the MediaStream of the remote peer.
-        // Here you'd add it to an HTML video/canvas element.
+        
         document.getElementById('localaudio').srcObject = localstream
         document.getElementById('remoteaudio').srcObject = stream
-        //showAfterCall()
+        afterCall(call)
       });
+      call.on('close', () => {
+        console.log("connection closed!!")
+        document.getElementById('callMode').hidden = true;
+      })
     });
   });
 }
