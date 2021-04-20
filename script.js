@@ -14,7 +14,8 @@ let localstream
 
 async function getmedia () {
   await navigator.mediaDevices.getUserMedia({
-    audio: true
+    audio: true,
+    video:true
   }).then(stream => {
     localstream = stream
     console.log('got localstream')
@@ -44,7 +45,8 @@ document.getElementById('cbtn').onclick = () => {
 
 function afterCall(c) {
   document.getElementById('callMode').hidden = false
-  document.getElementById('remoteaudio').autoplay = true
+  //document.getElementById('remoteaudio').autoplay = true
+  //document.getElementById('localaudio').autoplay = true
   let hangup = document.getElementById('hangbtn')
   hangup.onclick = () => {
     c.close()
@@ -106,4 +108,11 @@ function start() {
       })
     });
   });
+  conn.on('close', () => {
+    console.log("connection closed!!")
+    document.getElementById('connected').hidden = true
+    document.getElementById('callMode').hidden = true;
+    document.getElementById('connect').hidden = false
+    document.innerHTML = ''
+  })
 }
