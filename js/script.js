@@ -22,7 +22,7 @@ async function getmedia () {
   })
   .catch((err) => console.log('error in getting localstream:', err))
 }
-setTimeout(getmedia, 0);
+
 
 document.getElementById('msgbtn').onclick = () => {
   messageValue = document.getElementById('msg').value
@@ -43,22 +43,6 @@ document.getElementById('cbtn').onclick = () => {
   start()
 }
 
-function afterCall(c) {
-  document.getElementById('callMode').hidden = false
-  //document.getElementById('remoteaudio').autoplay = true
-  //document.getElementById('localaudio').autoplay = true
-  let hangup = document.getElementById('hangbtn')
-  hangup.onclick = () => {
-    c.close()
-    console.log("connection closed!!")
-    document.getElementById('callMode').hidden = true
-  }
-}
-
-function afterConnecion() {
-  document.getElementById('connected').hidden = false
-}
-
 peer.on('connection', function(con) {
   afterConnecion();
   conn = con
@@ -67,8 +51,6 @@ peer.on('connection', function(con) {
   console.log('connection Received')
   start()
 });
-
-
 
 function start() {
   conn.on('open', function() {
@@ -80,6 +62,7 @@ function start() {
     });
 
     document.getElementById('callbtn').onclick = () => {
+      getmedia();
       let call = peer.call(peerid, localstream)
       call.on('stream', function(stream) {
         
@@ -94,9 +77,9 @@ function start() {
     }
 
     peer.on('call', function(call) {
+      getmedia();
       call.answer(localstream);
       call.on('stream', function(stream) {
-        
         document.getElementById('localaudio').srcObject = localstream
         document.getElementById('remoteaudio').srcObject = stream
         afterCall(call)
@@ -115,3 +98,24 @@ function start() {
     document.innerHTML = ''
   })
 }
+
+function afterCall(c) {
+  document.getElementById('callMode').hidden = false
+  //document.getElementById('remoteaudio').autoplay = true
+  //document.getElementById('localaudio').autoplay = true
+  let hangup = document.getElementById('hangbtn')
+  hangup.onclick = () => {
+    c.close()
+    console.log("connection closed!!")
+    document.getElementById('callMode').hidden = true
+  }
+}
+
+function afterConnecion() {
+  document.getElementById('connected').hidden = false
+}
+
+
+
+
+
