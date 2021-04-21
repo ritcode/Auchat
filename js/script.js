@@ -22,7 +22,7 @@ async function getmedia () {
   })
   .catch((err) => console.log('error in getting localstream:', err))
 }
-
+setTimeout(getmedia,0)
 
 document.getElementById('msgbtn').onclick = () => {
   messageValue = document.getElementById('msg').value
@@ -61,33 +61,16 @@ function start() {
       console.log('Received', data);
     });
 
-    document.getElementById('callbtn').onclick = () => {
-      getmedia();
+    document.getElementById('callbtn').onclick = async () => {
+      //await getmedia();
       let call = peer.call(peerid, localstream)
-      call.on('stream', function(stream) {
-        
-        document.getElementById('localaudio').srcObject = localstream
-        document.getElementById('remoteaudio').srcObject = stream
-        afterCall(call)
-      });
-      call.on('close', () => {
-        console.log("connection closed!!")
-        document.getElementById('callMode').hidden = true
-      })
+      afterCall(call)
     }
 
-    peer.on('call', function(call) {
-      getmedia();
+    peer.on('call', async (call) => {
+      //await getmedia();
       call.answer(localstream);
-      call.on('stream', function(stream) {
-        document.getElementById('localaudio').srcObject = localstream
-        document.getElementById('remoteaudio').srcObject = stream
-        afterCall(call)
-      });
-      call.on('close', () => {
-        console.log("connection closed!!")
-        document.getElementById('callMode').hidden = true;
-      })
+      afterCall(call)
     });
   });
   conn.on('close', () => {
@@ -99,13 +82,21 @@ function start() {
   })
 }
 
-function afterCall(c) {
+function afterCall(call) {
+  call.on('stream', function(stream) {
+    document.getElementById('localaudio').srcObject = localstream
+    document.getElementById('remoteaudio').srcObject = stream
+  });
+  call.on('close', () => {
+    console.log("connection closed!!")
+    document.getElementById('callMode').hidden = true;
+  })
   document.getElementById('callMode').hidden = false
   //document.getElementById('remoteaudio').autoplay = true
   //document.getElementById('localaudio').autoplay = true
   let hangup = document.getElementById('hangbtn')
   hangup.onclick = () => {
-    c.close()
+    call.close()
     console.log("connection closed!!")
     document.getElementById('callMode').hidden = true
   }
