@@ -72,7 +72,6 @@ peer.on('connection', function(con) {
 
 function start() {
   conn.on('open', function() {
-    // Receive messages
     conn.on('data', function(data) {
       let d = document.createElement('h2')
       d.innerText = 'Friend : '+ data
